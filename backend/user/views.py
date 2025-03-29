@@ -20,9 +20,11 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['username'] = user.username
         token['name'] = user.name
         token['email'] = user.email
-        token['avatar'] = user.avatar
+        token['avatar'] = (
+            f"http://127.0.0.1:8000{user.avatar.url}" if user.avatar 
+            else "http://127.0.0.1:8000/media/avatars/default_avatar.jpg"
+        ) 
         token['bio'] = user.bio
-        # ...
 
         return token
 
@@ -49,6 +51,10 @@ class UpdateProfileView(generics.UpdateAPIView):
     queryset = User.objects.all()
     permission_classes = (IsAuthenticated,)
     serializer_class = UpdateUserSerializer
+
+    def put(self, request, *args, **kwargs):
+        # Ensure the request can handle file uploads
+        return self.update(request, *args, **kwargs)
 
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)

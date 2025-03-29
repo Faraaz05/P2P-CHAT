@@ -10,7 +10,7 @@ class User(AbstractUser):
     username = models.CharField(max_length=20, unique=True)
     bio = models.CharField(max_length=150, default="Hey there! I'm using Django Messenger")
     email = models.EmailField(_("email"), unique=True)
-    avatar = models.TextField(null=True, default="https://t4.ftcdn.net/jpg/00/64/67/27/360_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.jpg")
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)  # Updated field    
     friends = models.ManyToManyField('self', symmetrical=True, blank=True)
     
     USERNAME_FIELD = "email"

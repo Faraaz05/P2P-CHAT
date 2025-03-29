@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from user import urls as user
 from chat import urls as chat
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 
@@ -27,4 +29,7 @@ urlpatterns = [
     path('api/', include(user.user_urlpatterns)),
     path('api/chat/', include(chat)),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

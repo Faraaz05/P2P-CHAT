@@ -99,7 +99,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         instance.name = validated_data['name']
         # instance.email = validated_data['email']
         instance.username = validated_data['username']
-        instance.avatar = validated_data['avatar']
+        instance.avatar = validated_data.get('avatar', instance.avatar) 
         instance.bio = validated_data['bio']
         instance.save()
         return instance
