@@ -2,9 +2,8 @@ import { ArrowLeft } from 'lucide-react'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAuthStore from '../utils/appStore'
-import { storage } from '../config/firebase'
+
 import useFetch from '../hooks/useFetch'
-import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage"
 
 function Settings() {
     const { user } = useAuthStore()
@@ -17,48 +16,40 @@ function Settings() {
     const nav = useNavigate()
     const api = useFetch()
 
-    const handleFileChange = (e) => {
-        e.preventDefault()
-        const file = e.target?.files[0]
-        if (!file) return
-
-        const storageRef = ref(storage, `files/${file.name}`)
-        const uploadTask = uploadBytesResumable(storageRef, file)
-
-        uploadTask.on("state_changed",
-        (snapshot) => {
-            const progress =
-            Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
-            setProgresspercent(progress)
-            setProg(true)
-        },
-        (error) => {
-            alert(error)
-        },
-        () => {
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                setAvatar(downloadURL)
-            })
-        }
-        )
-    }
-
-
     const updateUser = async (name, username, avatar, bio) => {
-        try{
-            let body = {'name': name, 'username': username, 'avatar': avatar, 'bio': bio}
-            let { response, data } = await api(`edit/user/${user.user_id}`, 'PUT', body)
-            if(response.status === 200){
-                alert('Changes added Successfully! \n Wait a few minutes for the changes to be applied :)')
-                setTimeout(() => {
-                    nav('/')
-                }, [1000])
+        try {
+            const formData = new FormData(); // Use FormData for file uploads
+            formData.append('name', name);
+            formData.append('username', username);
+            formData.append('bio', bio);
+            if (avatar) {
+                formData.append('avatar', avatar); // Append the avatar file
             }
-          }
-         catch(err) {
-          console.log('Error Logging out', err)
+    
+            // Remove the 'Content-Type' header to let the browser set it automatically
+            let { response, data } = await api(`edit/user/${user.user_id}`, 'PUT', formData);
+    
+            if (response.status === 200) {
+                alert('Changes added Successfully! \n Wait a few minutes for the changes to be applied :)');
+                setTimeout(() => {
+                    nav('/');
+                }, 1000);
+            } else {
+                console.error('Error updating user:', data);
+                alert('Failed to save changes. Please try again.');
+            }
+        } catch (err) {
+            console.error('Error updating user:', err);
         }
-    }
+    };
+    
+    const handleFileChange = (e) => {
+        e.preventDefault();
+        const file = e.target?.files[0];
+        if (file) {
+            setAvatar(file);  // Store the file in state
+        }
+    };
 
   return (
     <section className="w-screen h-screen bg-bg-image flex items-center justify-center">
@@ -73,7 +64,11 @@ function Settings() {
         <div className='w-[40%] flex flex-col mx-auto px-5 gap-5'>
         <div className="flex flex-col items-center gap-10">
             <div className="flex items-center gap-10">
-                <img src={avatar} className='rounded-full w-20' alt="User Avatar" />
+            <img
+    src={avatar?.startsWith('http') ? avatar : `http://127.0.0.1:8000${avatar || '/media/avatars/default_avatar.jpg'}`}
+    className="rounded-full w-20"
+    alt="User Avatar"
+/>
                 <div className="flex flex-col gap-2">
                     <input type="file" accept="image/*" onChange={handleFileChange} />
                     { prog && <h1 className='font-thin text-xs'>{progresspercent}% uploaded</h1> }

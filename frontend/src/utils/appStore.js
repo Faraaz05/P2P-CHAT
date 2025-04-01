@@ -36,6 +36,7 @@ const useAuthStore = create((set) => ({
               body:JSON.stringify({'email': email, 'password': password})
         })
         let data = await response.json()
+        console.log(data);
 
         if (response.status === 200) {
         set({ authTokens: data })
@@ -43,6 +44,7 @@ const useAuthStore = create((set) => ({
         localStorage.setItem('authTokens', JSON.stringify(data))
       } else {
         alert('Something went wrong!')
+        
       }
     } catch (error) {
       console.error('Error logging in:', error)
@@ -78,8 +80,12 @@ const useAuthStore = create((set) => ({
   
           if (response.status === 201) {
               console.log("User registered successfully");
+              alert("User registered successfully");
           } else {
-              alert('Something went wrong!');
+              alert(`Something Went Wrong`);
+              if (response != null) {
+                alert(response.data);
+              }
           }
       } catch (error) {
           console.error('Error registering user:', error);

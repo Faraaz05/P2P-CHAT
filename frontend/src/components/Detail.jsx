@@ -28,7 +28,11 @@ function Detail() {
         <h1 className="mx-auto self-center font-semibold">User Profile</h1>
       </div>
       <div className="px-8 py-5 flex flex-col items-center gap-5 border border-transparent">
-        <img src={otherUser.avatar} className="w-24 h-24 rounded-full object-cover" alt="" />
+      <img
+    src={otherUser.avatar?.startsWith('http') ? otherUser.avatar : `http://127.0.0.1:8000${otherUser.avatar || '/media/avatars/default_avatar.jpg'}`}
+    className="w-24 h-24 rounded-full object-cover"
+    alt="User Avatar"
+/>
         <div className="flex-col items-center gap-1">
           <h2>{otherUser.name}</h2>
           <h2 className="font-thin text-xs">@{otherUser.username}</h2>

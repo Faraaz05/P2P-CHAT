@@ -2,6 +2,7 @@ import { Ellipsis, Video, SquarePen, Search, ArrowLeftFromLine, ArrowLeft, Setti
 import useAuthStore, { useSearch } from "../utils/appStore"
 import { useEffect, useState } from "react"
 import { useNavigate } from 'react-router-dom'
+
 function UserMenu({showMenu}){
   const { logoutUser} = useAuthStore()
   const nav = useNavigate()
@@ -48,8 +49,12 @@ function UserInfo() {
     <div className="flex flex-col" onMouseLeave={() => setShowMenu(false)}>
       <div className="p-5 flex items-center justify-between text-white">
       <div className="flex items-center gap-5">
-        <img src={user.avatar} alt="Profile Picture" className="w-12 h-12 rounded-full object-cover" />
-        <h2>{user.name}</h2> 
+      <img
+    src={user.avatar?.startsWith('http') ? user.avatar : `http://127.0.0.1:8000${user.avatar || '/media/avatars/default_avatar.jpg'}`}
+    className="w-12 h-12 rounded-full"
+    alt="User Avatar"
+/>
+      <h2>{user.name}</h2> 
       </div>
       <div className="flex justify-center gap-5 relative">
         <div className="cursor-pointer" onClick={() => setShowMenu((prev) => !prev)}>

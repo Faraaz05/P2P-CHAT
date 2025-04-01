@@ -82,7 +82,11 @@ export default function ChatList() {
               getFriends()
             }, 1200)
           }}>
-            <img src={item.avatar} className="w-12 h-12 rounded-full" alt="" />
+    <img
+    src={item.avatar?.startsWith('http') ? item.avatar : `http://127.0.0.1:8000${item.avatar || '/media/avatars/default_avatar.jpg'}`}
+    className="w-12 h-12 rounded-full"
+    alt="User Avatar"
+/>
             <div className="flex flex-col flex-1 truncate">
               <span>{item.name}</span>
               {

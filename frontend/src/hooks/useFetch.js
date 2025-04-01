@@ -34,27 +34,26 @@ let useFetch = () => {
         return data
     }
 
-    let callFetch = async (url, method = 'GET', body = null) => {
-        const user = jwtDecode(authTokens.access)
+    let callFetch = async (url, method = 'GET', body = null, headers = {}) => {
+        const user = jwtDecode(authTokens.access);
         const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
-
-        if(isExpired){
-            authTokens = await refreshToken(authTokens)
+    
+        if (isExpired) {
+            authTokens = await refreshToken(authTokens);
         }
-
-        
+    
         config['headers'] = {
-            Authorization:`Bearer ${authTokens?.access}`,
-            'Content-Type': 'application/json',
-        }
-
-        config['method'] = method
+            Authorization: `Bearer ${authTokens?.access}`,
+            ...headers,  // Merge additional headers
+        };
+    
+        config['method'] = method;
         if (body) {
-            config['body'] = JSON.stringify(body)
+            config['body'] = body instanceof FormData ? body : JSON.stringify(body);  // Handle FormData
         }
-
-        let {response, data} = await originalRequest(url, config)
-        return {response, data}
+    
+        let { response, data } = await originalRequest(url, config);
+        return { response, data };
     }
 
     return callFetch
